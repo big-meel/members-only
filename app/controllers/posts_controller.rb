@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  # before_action 
+  before_action :authenticate_user!, only: [ :new, :create ]
 
   def index
     @posts = Post.all
@@ -14,14 +14,17 @@ class PostsController < ApplicationController
   end
 
   def create
-    @post = Post.new(post_params)
+    if current_user
 
-    if @post.save
-      flash[:success] = "Post successfully saved"
-      redirect_to @post
-    else
-      flash.now = "Try again"
-      render :new
+      @post = current_user.posts.build(user_params)
+
+      if @post.save
+        flash[:success] = "Post successfully saved"
+        redirect_to @post
+      else
+        flash.now = "Try again"
+        render :new
+      end
     end
   end
 
